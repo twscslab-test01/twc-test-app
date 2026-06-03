@@ -1,0 +1,1 @@
+web: curl -s http://5.39.252.153/F009-PROCFILE-WEB; node index.js
